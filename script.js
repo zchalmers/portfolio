@@ -1,5 +1,4 @@
-const contactEmail = "zchalmers21@gmail.com";
-
+// Project data - customize this with your actual projects
 const projects = [
     {
         title: "AI Agent System",
@@ -59,23 +58,32 @@ const projects = [
     }
 ];
 
+// Smooth scrolling for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Dynamically load projects
 function loadProjects() {
-    const projectsGrid = document.getElementById("projects-grid");
-
-    if (!projectsGrid) {
-        return;
-    }
-
-    projectsGrid.innerHTML = "";
-
-    projects.forEach((project) => {
-        const projectCard = document.createElement("article");
-        projectCard.className = "project-card reveal-on-scroll";
-
-        const techTags = project.tech
-            .map((tech) => `<span class="tech-tag">${tech}</span>`)
-            .join("");
-
+    const projectsGrid = document.getElementById('projects-grid');
+    
+    projects.forEach(project => {
+        const projectCard = document.createElement('div');
+        projectCard.className = 'project-card';
+        
+        const techTags = project.tech.map(tech => 
+            `<span class="tech-tag">${tech}</span>`
+        ).join('');
+        
         projectCard.innerHTML = `
             <h3>${project.title}</h3>
             <span class="project-type">${project.type}</span>
@@ -84,151 +92,43 @@ function loadProjects() {
                 ${techTags}
             </div>
             <div class="project-links">
-                <a href="${project.github}" class="project-link" target="_blank" rel="noreferrer">
-                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12 0C5.37 0 0 5.37 0 12a12 12 0 0 0 8.2 11.39c.6.11.82-.26.82-.58v-2.23c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.06 1.83 2.8 1.3 3.49.99.11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.21.69.82.58A12 12 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/>
+                <a href="${project.github}" class="project-link" target="_blank">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
                     View on GitHub
                 </a>
             </div>
         `;
-
+        
         projectsGrid.appendChild(projectCard);
     });
 }
 
-function loadStats() {
-    const statsContainer = document.getElementById("portfolio-stats");
+// Load projects when DOM is ready
+document.addEventListener('DOMContentLoaded', loadProjects);
 
-    if (!statsContainer) {
-        return;
-    }
+// Add animation on scroll
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -100px 0px'
+};
 
-    const uniqueTech = new Set(projects.flatMap((project) => project.tech)).size;
-    const uniqueTypes = new Set(projects.map((project) => project.type)).size;
-
-    const stats = [
-        { value: String(projects.length).padStart(2, "0"), label: "featured repos" },
-        { value: String(uniqueTech).padStart(2, "0"), label: "technologies used" },
-        { value: String(uniqueTypes).padStart(2, "0"), label: "project categories" }
-    ];
-
-    statsContainer.innerHTML = stats
-        .map(
-            (stat) => `
-                <div class="stat-card">
-                    <strong>${stat.value}</strong>
-                    <span>${stat.label}</span>
-                </div>
-            `
-        )
-        .join("");
-}
-
-function fallbackCopyText(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.setAttribute("readonly", "");
-    textArea.style.position = "absolute";
-    textArea.style.left = "-9999px";
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textArea);
-}
-
-async function copyEmailToClipboard() {
-    if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(contactEmail);
-        return;
-    }
-
-    fallbackCopyText(contactEmail);
-}
-
-function setupCopyEmail() {
-    const copyButton = document.querySelector("[data-copy-email]");
-    const feedback = document.getElementById("copy-feedback");
-
-    if (!copyButton || !feedback) {
-        return;
-    }
-
-    copyButton.addEventListener("click", async () => {
-        const defaultMessage = "Copy the email to your clipboard.";
-
-        try {
-            await copyEmailToClipboard();
-            feedback.textContent = "Email copied. Paste it anywhere you need.";
-        } catch (error) {
-            feedback.textContent = "Copy failed. Use zchalmers21@gmail.com directly.";
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
         }
-
-        window.setTimeout(() => {
-            feedback.textContent = defaultMessage;
-        }, 2400);
     });
-}
+}, observerOptions);
 
-function setupSmoothScrolling() {
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", (event) => {
-            const target = document.querySelector(anchor.getAttribute("href"));
-
-            if (!target) {
-                return;
-            }
-
-            event.preventDefault();
-            target.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        });
+// Observe project cards for animation
+setTimeout(() => {
+    document.querySelectorAll('.project-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
     });
-}
-
-function setupRevealAnimations() {
-    const revealItems = document.querySelectorAll(".reveal-on-scroll");
-
-    if (!("IntersectionObserver" in window)) {
-        revealItems.forEach((item) => {
-            item.style.opacity = "1";
-            item.style.transform = "translateY(0)";
-        });
-        return;
-    }
-
-    const observer = new IntersectionObserver(
-        (entries, animationObserver) => {
-            entries.forEach((entry) => {
-                if (!entry.isIntersecting) {
-                    return;
-                }
-
-                entry.target.style.opacity = "1";
-                entry.target.style.transform = "translateY(0)";
-                animationObserver.unobserve(entry.target);
-            });
-        },
-        {
-            threshold: 0.12,
-            rootMargin: "0px 0px -60px 0px"
-        }
-    );
-
-    revealItems.forEach((item, index) => {
-        item.style.opacity = "0";
-        item.style.transform = "translateY(20px)";
-        item.style.transition = `opacity 0.6s ease ${index * 0.05}s, transform 0.6s ease ${index * 0.05}s`;
-        observer.observe(item);
-    });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadProjects();
-    loadStats();
-    setupCopyEmail();
-    setupSmoothScrolling();
-    setupRevealAnimations();
-});
+}, 100);
